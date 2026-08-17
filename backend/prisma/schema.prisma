@@ -1,0 +1,91 @@
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "postgresql"
+  url      = env("DATABASE_URL")
+}
+
+enum RepoStatus {
+  PENDING
+  INDEXING
+  READY
+  FAILED
+}
+
+model Repository {
+  id            String       @id @default(cuid())
+  owner         String
+  name          String
+  url           String
+  defaultBranch String       @default("main")
+  description   String?
+  language      String?
+  stars         Int          @default(0)
+  status        RepoStatus   @default(PENDING)
+  error         String?
+  fileCount     Int          @default(0)
+  chunkCount    Int          @default(0)
+  indexedAt     DateTime?
+  createdAt     DateTime     @default(now())
+  updatedAt     DateTime     @updatedAt
+
+  files         RepositoryFile[]
+  conversations Conversation[]
+  analyses      AnalysisResult[]
+
+  @@unique([owner, name])
+}
+
+model RepositoryFile {
+  id           String     @id @default(cuid())
+  repositoryId String
+  path         String
+  size         Int        @default(0)
+  language     String?
+
+  repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+
+  @@unique([repositoryId, path])
+  @@index([repositoryId])
+}
+
+model Conversation {
+  id           String     @id @default(cuid())
+  repositoryId String
+  title        String     @default("New conversation")
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+
+  repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+  messages     Message[]
+
+  @@index([repositoryId])
+}
+
+model Message {
+  id             String       @id @default(cuid())
+  conversationId String
+  role           String // "user" | "assistant"
+  content        String
+  createdAt      DateTime     @default(now())
+
+  conversation   Conversation @relation(fields: [conversationId], references: [id], onDelete: Cascade)
+
+  @@index([conversationId])
+}
+
+model AnalysisResult {
+  id           String     @id @default(cuid())
+  repositoryId String
+  type         String // "architecture" | "docs" | "bugs" | "commits" | "explain"
+  key          String     @default("") // e.g. file path for per-file analyses
+  content      String
+  createdAt    DateTime   @default(now())
+
+  repository   Repository @relation(fields: [repositoryId], references: [id], onDelete: Cascade)
+
+  @@unique([repositoryId, type, key])
+  @@index([repositoryId])
+}

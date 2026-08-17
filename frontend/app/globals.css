@@ -1,0 +1,35 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+body {
+  @apply bg-background text-zinc-200 antialiased;
+}
+
+/* Markdown output styling */
+.prose-md {
+  @apply text-sm leading-relaxed text-zinc-300;
+}
+.prose-md h1,
+.prose-md h2,
+.prose-md h3,
+.prose-md h4 {
+  @apply mt-5 mb-2 font-semibold text-zinc-100;
+}
+.prose-md h1 { @apply text-xl; }
+.prose-md h2 { @apply text-lg; }
+.prose-md h3 { @apply text-base; }
+.prose-md p { @apply my-2; }
+.prose-md ul { @apply my-2 list-disc pl-5 space-y-1; }
+.prose-md ol { @apply my-2 list-decimal pl-5 space-y-1; }
+.prose-md a { @apply text-accent underline; }
+.prose-md code {
+  @apply rounded bg-black/40 px-1 py-0.5 font-mono text-[0.85em] text-emerald-300;
+}
+.prose-md pre {
+  @apply my-3 overflow-x-auto rounded-lg border border-border bg-black/40 p-3;
+}
+.prose-md pre code { @apply bg-transparent p-0 text-zinc-200; }
+.prose-md blockquote { @apply my-2 border-l-2 border-border pl-3 text-zinc-400; }
+.prose-md table { @apply my-3 w-full border-collapse text-left; }
+.prose-md th, .prose-md td { @apply border border-border px-2 py-1; }
